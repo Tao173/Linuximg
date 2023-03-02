@@ -1,0 +1,91 @@
+
+#==========================================================================
+# Description: Build Armbian For U
+# Copyright (C) 2022 https://github.com/toneywoo/orangepi-action-build
+#==========================================================================
+
+name: Build Oranges OP3lts
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      set_release:
+        description: "Select OS Release."
+        required: false
+        default: "bullseye"
+        type: choice
+        options:
+          - jammy
+          - bullseye
+      armbian_fstype:
+        description: "Select armbian rootfs type."
+        required: false
+        default: "ext4"
+        type: choice
+        options:
+          - ext4
+          - btrfs
+env:
+  TZ: America/New_York
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Initialization environment
+        id: init
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          # sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc 2>/dev/null
+          # sudo -E apt-get -qq update
+          # sudo -E apt-get -qq install -y $(curl -fsSL https://is.gd/depend_ubuntu2204_armbian)
+          # sudo -E apt-get -qq autoremove --purge
+          # sudo -E apt-get -qq clean
+          sudo timedatectl set-timezone "${TZ}"
+          echo "ARMBIAN_RELEASE=${{ github.event.inputs.set_release }}" >> ${GITHUB_ENV}
+          echo "status=success" >> ${GITHUB_OUTPUT}
+      - name: Download source code
+        id: down
+        if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          git clone https://github.com/orangepi-xunlong/orangepi-build.git -b next
+          echo "status=success" >> ${GITHUB_OUTPUT}
+      - name: Compile Armbian [ ${{ env.ARMBIAN_RELEASE }} ]
+        id: compile
+        if: ${{ steps.down.outputs.status }} == 'success' && !cancelled()
+        run: |
+          # Compile method and parameter description: https://docs.armbian.com/Developer-Guide_Build-Options
+          cd orangepi-build/
+          mkdir -p userpatches
+          #cp ../config-default.conf ./userpatches/
+          #cp ../config-example.conf ./userpatches/
+          #cp -f ../configuration.sh ./scripts/
+          sudo ./build.sh  BOARD=orangepi4 BRANCH=next BUILD_OPT=image RELEASE=bullseye BUILD_MINIMAL=no \
+          BUILD_DESKTOP=no KERNEL_CONFIGURE=no \
+          COMPRESS_OUTPUTIMAGE=sha,img CONFIG="../config-example.conf"
+          
+          echo "build_tag=Armbian_Orange_${{ env.ARMBIAN_RELEASE }}_$(date +"%m.%d.%H%M")" >> ${GITHUB_OUTPUT}
+          ZIPFILE="Armbian_Orange_${{ env.ARMBIAN_RELEASE }}_$(date +"%m.%d.%H%M")"
+          zip -r ${ZIPFILE}.zip output/images/
+          #pwd
+          #zip -r Armbian_Orange_${{ env.ARMBIAN_RELEASE }}_$(date +"%m.%d.%H%M").zip scripts/
+          #zip -r scripts.zip scripts/
+          pwd
+          ls
+          echo "status=success" >> ${GITHUB_OUTPUT}
+      - name: Upload Armbian image to Release
+        uses: ncipollo/release-action@v1
+        if: ${{ steps.compile.outputs.status }} == 'success' && !cancelled()
+        with:
+          tag: ${{ steps.compile.outputs.build_tag }}
+          name: "OPI3LTS-RELEASE"
+          artifacts: "/home/runner/work/orangepi-action-build/orangepi-action-build/orangepi-build/*.zip"
+          #allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}

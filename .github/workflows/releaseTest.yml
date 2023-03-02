@@ -1,0 +1,30 @@
+name: Releases
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+    
+     - name: checkout
+       uses: actions/checkout@v3
+     - name: zipfile
+       run: |
+         zip -r release.0.0.0.1.zip ./
+         ls -l -c
+         
+     - name: releseirt
+       uses: ncipollo/release-action@v1
+       with:
+          tag: "ni-ma-sha-diao"
+          name: "shit"
+          #artifacts: "release.0.0.0.1.zip,release.tar.gz,foo/*.txt"
+          artifacts: "./*.zip"
+          #bodyFile: "README.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
