@@ -4,7 +4,7 @@
 # Copyright (C) 2022 https://github.com/toneywoo/orangepi-action-build
 #==========================================================================
 
-name: Build Oranges OP3lts
+name: Build Oranges OP4
 
 on:
   repository_dispatch:
