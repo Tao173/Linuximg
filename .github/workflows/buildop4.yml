@@ -26,6 +26,10 @@ on:
         options:
           - ext4
           - btrfs
+      ssh:
+        description: 'SSH Connection To Actions?'
+        required: false
+        default: 'false'          
 env:
   TZ: America/New_York
 
@@ -80,6 +84,11 @@ jobs:
           pwd
           ls
           echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Setup Debug Session 'touch /tmp/keepalivegit'
+        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') 
+        uses: csexton/debugger-action@master
+
       - name: Upload Armbian image to Release
         uses: ncipollo/release-action@v1
         if: ${{ steps.compile.outputs.status }} == 'success' && !cancelled()
