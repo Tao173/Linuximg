@@ -61,6 +61,11 @@ jobs:
         run: |
           git clone https://github.com/orangepi-xunlong/orangepi-build.git -b next
           echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Setup Debug Session 'touch /tmp/keepalivegit'
+        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') 
+        uses: csexton/debugger-action@master
+
       - name: Compile Armbian [ ${{ env.ARMBIAN_RELEASE }} ]
         id: compile
         if: ${{ steps.down.outputs.status }} == 'success' && !cancelled()
@@ -85,11 +90,11 @@ jobs:
           ls
           echo "status=success" >> ${GITHUB_OUTPUT}
 
-      - name: Setup Debug Session 'touch /tmp/keepalivegit'
-        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') 
-        uses: csexton/debugger-action@master
+     # - name: Setup Debug Session 'touch /tmp/keepalivegit'
+     #   if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') 
+     #   uses: csexton/debugger-action@master
 
-      - name: Upload Armbian image to Release
+      - name: Upload image to Release
         uses: ncipollo/release-action@v1
         if: ${{ steps.compile.outputs.status }} == 'success' && !cancelled()
         with:
