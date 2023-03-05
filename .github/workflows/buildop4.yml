@@ -95,6 +95,6 @@ jobs:
         with:
           tag: ${{ steps.compile.outputs.build_tag }}
           name: "OPI3LTS-RELEASE"
-          artifacts: "/home/runner/work/orangepi-action-build/orangepi-action-build/orangepi-build/*.zip"
+          artifacts: "/home/runner/work/Orangepi/Orangepi/orangepi-build/output/images/Orangepi*/*.img"
           #allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
