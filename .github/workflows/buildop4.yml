@@ -76,6 +76,7 @@ jobs:
           #cp ../config-default.conf ./userpatches/
           #cp ../config-example.conf ./userpatches/
           #cp -f ../configuration.sh ./scripts/
+          cp -f ../ha.sh ./scripts/
           sudo ./build.sh  BOARD=orangepi4 BRANCH=next BUILD_OPT=image RELEASE=bullseye BUILD_MINIMAL=no \
           BUILD_DESKTOP=no KERNEL_CONFIGURE=no \
           COMPRESS_OUTPUTIMAGE=sha,img CONFIG="../config-example.conf"
