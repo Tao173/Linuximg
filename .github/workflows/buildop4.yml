@@ -94,7 +94,22 @@ jobs:
         if: ${{ steps.compile.outputs.status }} == 'success' && !cancelled()
         with:
           tag: ${{ steps.compile.outputs.build_tag }}
-          name: "OPI3LTS-RELEASE"
+          name: "OPI4-RELEASE"
           artifacts: "/home/runner/work/Orangepi/Orangepi/orangepi-build/output/images/Orangepi*/*.img"
           #allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
+      # 清理发行
+      - name: Remove Old Release
+        uses: dev-drprasad/delete-older-releases@v0.1.0
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        with:
+          keep_latest: 3
+          delete_tags: true
+      - name: Delete Old Workflows
+        uses: GitRML/delete-workflow-runs@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          retain_days: 7
+          keep_minimum_runs: 1          
