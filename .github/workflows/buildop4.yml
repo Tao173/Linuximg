@@ -62,9 +62,9 @@ jobs:
           git clone https://github.com/orangepi-xunlong/orangepi-build.git -b next
           echo "status=success" >> ${GITHUB_OUTPUT}
 
-      - name: Setup Debug Session 'touch /tmp/keepalivegit'
-        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') 
-        uses: csexton/debugger-action@master
+     # - name: Setup Debug Session 'touch /tmp/keepalivegit'
+     #   if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') 
+     #   uses: csexton/debugger-action@master
 
       - name: Compile Armbian [ ${{ env.ARMBIAN_RELEASE }} ]
         id: compile
@@ -76,7 +76,6 @@ jobs:
           #cp ../config-default.conf ./userpatches/
           #cp ../config-example.conf ./userpatches/
           #cp -f ../configuration.sh ./scripts/
-          cp -f ../ha.sh ./scripts/
           sudo ./build.sh  BOARD=orangepi4 BRANCH=next BUILD_OPT=image RELEASE=bullseye BUILD_MINIMAL=no \
           BUILD_DESKTOP=no KERNEL_CONFIGURE=no \
           COMPRESS_OUTPUTIMAGE=sha,img CONFIG="../config-example.conf"
