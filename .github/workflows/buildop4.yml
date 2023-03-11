@@ -73,7 +73,7 @@ jobs:
           # Compile method and parameter description: https://docs.armbian.com/Developer-Guide_Build-Options
           cd orangepi-build/
           mkdir -p userpatches
-          #cp ../config-default.conf ./userpatches/
+          cp ../config-default.conf ./userpatches/
           #cp ../config-example.conf ./userpatches/
           #cp -f ../configuration.sh ./scripts/
           sudo ./build.sh  BOARD=orangepi4 BRANCH=next BUILD_OPT=image RELEASE=bullseye BUILD_MINIMAL=no \
