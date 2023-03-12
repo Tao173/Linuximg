@@ -77,8 +77,7 @@ jobs:
           #cp ../config-example.conf ./userpatches/
           #cp -f ../configuration.sh ./scripts/
           sudo ./build.sh  BOARD=orangepi4 BRANCH=next BUILD_OPT=image RELEASE=bullseye BUILD_MINIMAL=no \
-          BUILD_DESKTOP=no KERNEL_CONFIGURE=no \
-          KERNEL_CONFIGURE=prebuilt  \
+          BUILD_DESKTOP=no KERNEL_CONFIGURE=yes \
           COMPRESS_OUTPUTIMAGE=sha,img CONFIG="../config-example.conf"
           
           echo "build_tag=Armbian_Orange_${{ env.ARMBIAN_RELEASE }}_$(date +"%m.%d.%H%M")" >> ${GITHUB_OUTPUT}
